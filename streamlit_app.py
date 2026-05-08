@@ -614,8 +614,7 @@ def plot_industry_overview(df: pd.DataFrame) -> plt.Figure:
 
 st.title("NYS Industry Compensation Forecast Dashboard")
 st.caption(
-    "A practitioner-facing dashboard for exploring New York State quarterly compensation forecasts "
-    "for four major private-sector industries."
+    "A user-controlled tool to explore projected compensation growth for New York State's top industries."
 )
 
 with st.sidebar:
