@@ -706,7 +706,7 @@ with tab_forecast:
         st.pyplot(fig, clear_figure=True)
 
         st.caption(
-            "Source: U.S. Bureau of Economic Analysis, "SQINC6N Compensation of employees by NAICS industry" (accessed Sunday, May 5, 2026)"
+            'Source: U.S. Bureau of Economic Analysis, "SQINC6N Compensation of employees by NAICS industry" (accessed Sunday, May 5, 2026)"'
         )
         st.dataframe(
             future_forecasts[selected_key][selected_models]
