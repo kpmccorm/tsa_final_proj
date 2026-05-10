@@ -596,11 +596,14 @@ def plot_industry_overview(df: pd.DataFrame) -> plt.Figure:
     fig, ax = plt.subplots(figsize=(12, 6))
     for group in TARGET_INDUSTRIES + ["Other"]:
         temp = grouped.loc[grouped["industry_group"] == group]
-        ax.plot(temp["period"], temp["compensation"], label=group)
+        ax.plot(temp["period"],
+                temp["compensation"],
+                label=group,
+                linewidth=3)
 
-    ax.set_title("Quarterly compensation by industry group")
+    ax.set_title("Quarterly Compensation by Industry Group")
     ax.set_xlabel("Quarter")
-    ax.set_ylabel("Compensation")
+    ax.set_ylabel("Compensation ($ in M)")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(dollars_millions))
     ax.grid(True)
     ax.legend(ncols=2)
@@ -619,7 +622,7 @@ st.caption(
 
 with st.sidebar:
     st.header("Controls")
-    data_file = st.text_input("Data file path", value="data.csv")
+    data_file = "data.csv"
 
 try:
     results = run_models(data_file)
@@ -662,11 +665,14 @@ with st.sidebar:
         index=1,
     )
 
-st.subheader("Project Context")
+st.subheader("Overview")
 st.write(
-    "This dashboard compares statistical and machine-learning forecasts of quarterly compensation "
-    "levels in New York State. It is intended as a communication tool for analysts who need to "
-    "compare forecast paths, understand recent model errors, and inspect residual diagnostics."
+    '''Compensation levels are a critical economic indicator.
+    They help inform the level of power that workers have in the labor marketplace relative to firms, the relative boom and bust across various industries, and general economic health.
+    Economists and policy makers also monitor compensation levels for practical purposes, as they heavily influence state revenue collections in a given year. This project
+    examined the top four largest industries within New York State according to BEA data. Users may view recent trends in compensation levels for these industries and compare forecasts,
+    and their supporting analyses, below.
+    '''
 )
 
 summary_cols = st.columns(4)
@@ -680,11 +686,11 @@ summary_cols[3].metric("Best holdout model by MAPE", best_model)
 st.divider()
 
 tab_forecast, tab_holdout, tab_diagnostics, tab_data = st.tabs(
-    ["Forecasts", "Holdout Evaluation", "Residual Diagnostics", "Data"]
+    ["Forecasts", "Test Data Evaluation", "Residual Diagnostics", "Data"]
 )
 
 with tab_forecast:
-    st.subheader("Actuals and Future Forecasts")
+    st.subheader("Select Time Series Model Forecasts")
     if not selected_models:
         st.warning("Select at least one forecast model in the sidebar.")
     else:
@@ -695,13 +701,12 @@ with tab_forecast:
             models=selected_models,
             horizon=horizon,
             start_date=pd.Timestamp(start_date),
-            title=f"{selected_display}: actuals and {horizon}-quarter forecast",
+            title=f"{selected_display}: Actuals and {horizon}-quarter forecast",
         )
         st.pyplot(fig, clear_figure=True)
 
         st.caption(
-            "Shaded intervals use holdout residual dispersion as a simple uncertainty band. "
-            "They are communication intervals, not formal model-specific prediction intervals."
+            "Source: U.S. Bureau of Economic Analysis, "SQINC6N Compensation of employees by NAICS industry" (accessed Sunday, May 5, 2026)"
         )
         st.dataframe(
             future_forecasts[selected_key][selected_models]
@@ -711,11 +716,10 @@ with tab_forecast:
         )
 
 with tab_holdout:
-    st.subheader("Holdout Forecast Evaluation")
+    st.subheader("Test Data Evaluation")
     st.write(
         f"Models were evaluated over the final {TEST_LENGTH} quarters of the available data. "
-        "Metrics are calculated only against the holdout period."
-    )
+        "Metrics are calculated only against the test period.")
 
     col1, col2 = st.columns([1.2, 1])
     with col1:
